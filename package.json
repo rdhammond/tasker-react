@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "autoprefixer": "7.1.2",
+    "axios": "^0.17.0",
     "babel-core": "6.25.0",
     "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",
@@ -31,6 +32,7 @@
     "postcss-loader": "2.0.6",
     "promise": "8.0.1",
     "react": "^16.0.0",
+    "react-bootstrap": "^0.31.5",
     "react-dev-utils": "^4.1.0",
     "react-dom": "^16.0.0",
     "style-loader": "0.18.2",
