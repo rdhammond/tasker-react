@@ -12,14 +12,14 @@ class App extends Component {
         <TaskerHeader />
         <div className="container">
           <Row>
-            <Col md="4">
-              <TaskList type="daily" baseUrl={baseUrl} />
+            <Col md={4}>
+              <TaskList type="daily" title="Daily" baseUrl={baseUrl} />
             </Col>
-            <Col md="4">
-              <TaskList type="monthly" baseUrl={baseUrl} />
+            <Col md={4}>
+              <TaskList type="monthly" baseUrl={baseUrl} title="Monthly" />
             </Col>
-            <Col md="4">
-              <TaskList type="longterm" baseUrl={baseUrl} />
+            <Col md={4}>
+              <TaskList type="longterm" baseUrl={baseUrl} title="Long Term" showClear={true}/>
             </Col>
           </Row>
         </div>

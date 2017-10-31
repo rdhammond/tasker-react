@@ -1,24 +1,16 @@
-import {axios} from 'axios';
+import axios from 'axios';
 
 export default class TaskService {
 	constructor(baseUrl) {
 		this.baseUrl = baseUrl;
 	}
 
-	async getDailies() {
-		return axios.get(`${this.baseUrl}/tasks/daily`);
+	async get(type) {
+		return axios.get(`${this.baseUrl}/tasks/${type}`);
 	}
 
-	async getWeeklies() {
-		return axios.get(`${this.baseUrl}/tasks/weekly`);
-	}
-
-	async getLongTerm() {
-		return axios.get(`${this.baseUrl}/tasks/longterm`);
-	}
-
-	async completeTask(id) {
-		return axios.put(`${this.baseUrl}/tasks/${id}`, {complete: true});
+	async setComplete(id, complete) {
+		return axios.put(`${this.baseUrl}/tasks/${id}`, {complete});
 	}
 
 	async addTask(task) {
