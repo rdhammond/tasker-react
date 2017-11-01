@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {Button, ListGroup} from 'react-bootstrap';
+import {Button, ListGroup, ListGroupItem} from 'react-bootstrap';
 import TaskService from './TaskService';
+import './TaskList.css';
 
 class CustomListItem extends Component {
   constructor(props) {
@@ -8,15 +9,19 @@ class CustomListItem extends Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick() {
-    this.props.onClick(this.props.task);
+  handleClick(e) {
+    this.props.onClick(this.props.taskId);
   }
 
   render() {
+    const task = this.props.task;
+    const className = task.complete ? 'text-muted' : '';
+
     return (
-      <li className="list-group-item" onClick={this.handleClick}>
-        {this.props.children}
-      </li>
+      <ListGroupItem href="#" onClick={this.handleClick} className={className}>
+        {task.complete && <s>{task.name}</s>}
+        {!task.complete && task.name}
+      </ListGroupItem>
     );
   }
 }
@@ -27,7 +32,7 @@ export default class TaskList extends Component {
     this.state = {tasks: []};
     this.taskSvc = new TaskService(this.props.baseUrl);
     this.handleClearAllClick = this.handleClearAllClick.bind(this);
-		this.handleItemClicked = this.handleItemClicked.bind(this);
+    this.handleItemClicked = this.handleItemClicked.bind(this);
   }
 
   async componentDidMount() {
@@ -39,18 +44,28 @@ export default class TaskList extends Component {
     window.alert('handleClearAllClick()');
   }
 
-	async handleItemClicked(task) {
-		task.complete = !task.complete;
-		await this.taskSvc.setComplete(task.id, task.complete);
-	}
+  async handleItemClicked(taskId) {
+    const task = this.state.tasks[taskId];
+    task.complete = !task.complete;
+
+    const stateBucket = {};
+    stateBucket[taskId] = task;
+    this.setState(stateBucket);
+    //await this.taskSvc.setComplete(task.id, task.complete);
+  }
 
   render() {
 		const title = this.props.title;
 		const showClear = this.props.showClear;
+    const tasks = this.state.tasks;
+		const items = [];
 
-		const items = this.state.tasks.map(t =>
-			<CustomListItem task={t} onClick={this.handleItemClicked}>{t.name}</CustomListItem>
-		);
+		for (const k in tasks) {
+      const v = tasks[k];
+			items.push(
+				<CustomListItem key={k} taskId={k} task={v} onClick={this.handleItemClicked} />
+			);
+		}
 
     return (
       <div className="taskList">
@@ -59,7 +74,7 @@ export default class TaskList extends Component {
         }
         <h3>{title}</h3>
         <ListGroup>
-					{items}
+          {items}
         </ListGroup>
       </div>
     );

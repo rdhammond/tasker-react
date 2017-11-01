@@ -6,7 +6,12 @@ export default class TaskService {
 	}
 
 	async get(type) {
-		return axios.get(`${this.baseUrl}/tasks/${type}`);
+		//return axios.get(`${this.baseUrl}/tasks/${type}`);
+		return Promise.resolve({
+			1: {id: 1, name: 'Task 1'},
+			2: {id: 2, name: 'Task 2'},
+			3: {id: 3, name: 'Task 3'}
+		});
 	}
 
 	async setComplete(id, complete) {
