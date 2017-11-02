@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, ListGroup, ListGroupItem} from 'react-bootstrap';
+import {Row, Col, Button, ListGroup, ListGroupItem, Glyphicon, ButtonGroup} from 'react-bootstrap';
 import TaskService from './TaskService';
 import './TaskList.css';
 
@@ -7,10 +7,15 @@ class CustomListItem extends Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
+	this.handleDeleteClick = this.handleDeleteClick.bind(this);
   }
 
   handleClick(e) {
     this.props.onClick(this.props.taskId);
+  }
+
+  handleDeleteClick(e) {
+  	this.props.onDeleteClick(this.props.taskid);
   }
 
   render() {
@@ -18,10 +23,17 @@ class CustomListItem extends Component {
     const className = task.complete ? 'text-muted' : '';
 
     return (
-      <ListGroupItem href="#" onClick={this.handleClick} className={className}>
-        {task.complete && <s>{task.name}</s>}
-        {!task.complete && task.name}
-      </ListGroupItem>
+      <Row className="no-gutters">
+		  <Col xs={10}>
+        <ListGroupItem href="#" onClick={this.handleClick} className={className}>
+          {task.complete && <s>{task.name}</s>}
+          {!task.complete && task.name}
+        </ListGroupItem>
+		  </Col>
+		  <Col xs={2}>
+        <Button className="delete pull-right"><Glyphicon glyph="trash" /></Button>
+		  </Col>
+      </Row>
     );
   }
 }
