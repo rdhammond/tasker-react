@@ -7,7 +7,7 @@ class CustomListItem extends Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
-	this.handleDeleteClick = this.handleDeleteClick.bind(this);
+    this.handleDeleteClick = this.handleDeleteClick.bind(this);
   }
 
   handleClick(e) {
@@ -15,25 +15,19 @@ class CustomListItem extends Component {
   }
 
   handleDeleteClick(e) {
-  	this.props.onDeleteClick(this.props.taskid);
+	e.stopPropagation();
+    this.props.onDeleteClick(this.props.taskId);
   }
 
   render() {
     const task = this.props.task;
-    const className = task.complete ? 'text-muted' : '';
+    const className = 'list-group-item ' + (task.complete ? 'strike' : '');
 
     return (
-      <Row className="no-gutters">
-		  <Col xs={10}>
-        <ListGroupItem href="#" onClick={this.handleClick} className={className}>
-          {task.complete && <s>{task.name}</s>}
-          {!task.complete && task.name}
-        </ListGroupItem>
-		  </Col>
-		  <Col xs={2}>
-        <Button className="delete pull-right"><Glyphicon glyph="trash" /></Button>
-		  </Col>
-      </Row>
+      <div className={className}>
+        <a href="#complete" className="complete" onClick={this.handleClick}>{task.name}</a>
+        <a href="#delete" className="delete" onClick={this.handleDeleteClick}><Glyphicon glyph="trash" /></a>
+      </div>
     );
   }
 }
@@ -63,32 +57,36 @@ export default class TaskList extends Component {
     const stateBucket = {};
     stateBucket[taskId] = task;
     this.setState(stateBucket);
-    //await this.taskSvc.setComplete(task.id, task.complete);
+    await this.taskSvc.setComplete(task.id, task.complete);
+  }
+
+  handleDeleteClicked(taskId) {
+    window.alert('Delete: ' + taskId);
   }
 
   render() {
-		const title = this.props.title;
-		const showClear = this.props.showClear;
+    const title = this.props.title;
+    const showClear = this.props.showClear;
     const tasks = this.state.tasks;
-		const items = [];
+    const items = [];
 
-		for (const k in tasks) {
+    for (const k in tasks) {
       const v = tasks[k];
-			items.push(
-				<CustomListItem key={k} taskId={k} task={v} onClick={this.handleItemClicked} />
-			);
-		}
+      items.push(
+        <CustomListItem key={k} taskId={k} task={v} onClick={this.handleItemClicked} onDeleteClick={this.handleDeleteClicked} />
+      );
+    }
 
     return (
-      <div className="taskList">
+        <div className="taskList">
         {showClear &&
         <Button bsStyle="danger" onClick={this.handleClearAllClick} className="pull-right">Remove Completed</Button>
         }
         <h3>{title}</h3>
         <ListGroup>
-          {items}
+        {items}
         </ListGroup>
-      </div>
-    );
+        </div>
+        );
   }
 }

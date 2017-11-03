@@ -16,13 +16,16 @@ export default class TaskService {
 
 	async setComplete(id, complete) {
 		//return axios.put(`${this.baseUrl}/tasks/${id}`, {complete});
+		return Promise.resolve();
 	}
 
 	async addTask(task) {
 		//return axios.post(`${this.baseUrl}/tasks`, {task});
+		return Promise.resolve();
 	}
 
 	async deleteTask(id) {
 		//return axios.del(`${this.baseUrl}/tasks/${id}`);
+		return Promise.resolve();
 	}
 }

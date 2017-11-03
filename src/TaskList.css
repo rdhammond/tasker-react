@@ -1,7 +1,30 @@
-a.text-muted.list-group-item {
+.list-group-item.strike {
 	background-color: #333;
 	color: #9d9d9d;
 }
+	.list-group-item a {
+		text-decoration: none;
+		color: inherit;
+	}
+	.list-group-item .delete {
+		display: inline-block;
+		vertical-align: middle;
+		text-align: center;
+		width: 25px;
+		border-left: 1px solid black;
+		padding-left: 10px;
+	}
+	.list-group-item .complete {
+		display: inline-block;
+		vertical-align: middle;
+		width: 90%;
+	}
+		.list-group-item .glyphicon {
+			top: 0;
+		}
+	.list-group-item.strike .complete {
+		text-decoration: line-through;
+	}
 
 .delete {
 	position: relative;
