@@ -1,107 +1,93 @@
 import React, {Component} from 'react';
-import {Row, Col, Button, ListGroup, ListGroupItem, Glyphicon, ButtonGroup} from 'react-bootstrap';
+import {Button, ListGroup, Glyphicon} from 'react-bootstrap';
+import CustomListItem from './CustomListItem';
+import ListItemEditor from './ListItemEditor';
 import ConfirmDeleteAllModal from './ConfirmDeleteAllModal';
 import TaskService from './TaskService';
 import './TaskList.css';
-
-class CustomListItem extends Component {
-  constructor(props) {
-    super(props);
-    this.handleClick = this.handleClick.bind(this);
-    this.handleDeleteClick = this.handleDeleteClick.bind(this);
-  }
-
-  handleClick(e) {
-    this.props.onClick(this.props.taskId);
-  }
-
-  handleDeleteClick(e) {
-	e.stopPropagation();
-    this.props.onDeleteClick(this.props.taskId);
-  }
-
-  render() {
-    const task = this.props.task;
-    const className = 'list-group-item ' + (task.complete ? 'strike' : '');
-
-    return (
-      <div className={className}>
-        <a href="#complete" className="complete" onClick={this.handleClick}>{task.name}</a>
-        <a href="#delete" className="delete" onClick={this.handleDeleteClick}><Glyphicon glyph="trash" /></a>
-      </div>
-    );
-  }
-}
 
 export default class TaskList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-		tasks: [],
-		confirmModalShowing: false
-	};
-    this.taskSvc = new TaskService(this.props.baseUrl);
+      confirmModalShowing: false,
+	  tasks: [],
+	  showListEditor: false
+    };
+    this.taskSvc = new TaskService(this.props.baseUrl, this.props.type);
     this.handleClearAllClicked = this.handleClearAllClicked.bind(this);
     this.handleItemClicked = this.handleItemClicked.bind(this);
-	this.handleConfirmed = this.handleConfirmed.bind(this);
+    this.handleDeleteAllConfirmed = this.handleDeleteAllConfirmed.bind(this);
+	this.handleListEditConfirmed = this.handleListEditConfirmed.bind(this);
+	this.handleAddClicked = this.handleAddClicked.bind(this);
   }
 
   async componentDidMount() {
-    const tasks = await this.taskSvc.get(this.props.type);
+    const tasks = await this.taskSvc.get();
     this.setState({tasks});
   }
 
   handleClearAllClicked() {
-  	this.setState({confirmModalShowing: true});
+    this.setState({confirmModalShowing: true});
   }
 
-  async handleItemClicked(taskId) {
-    const task = this.state.tasks[taskId];
-    task.complete = !task.complete;
+  async handleItemClicked(task) {
+	task.complete = !task.complete;
 
-    const stateBucket = {};
-    stateBucket[taskId] = task;
-    this.setState(stateBucket);
-    await this.taskSvc.setComplete(task.id, task.complete);
+  	const tasks = await this.taskSvc.put(task);
+	this.setState({tasks});
   }
 
-  handleDeleteClicked(taskId) {
-    window.alert('Delete: ' + taskId);
+  async handleDeleteClicked(task) {
+	const tasks = await this.taskSvc.del(task);
+  	this.setState({tasks});
   }
 
-  async handleConfirmed(ok) {
-	this.setState({confirmModalShowing: false});
-  	if (!ok)
-		return Promise.resolve();
+  async handleDeleteAllConfirmed(ok) {
+    this.setState({confirmModalShowing: false});
+    if (!ok)
+      return Promise.resolve();
 
-	const tasksAfterDelete = await this.taskSvc.deleteCompletedTasks(this.props.type);
-	this.setState({tasks: tasksAfterDelete});
+    const tasks = await this.taskSvc.delCompleted();
+    this.setState({tasks});
+  }
+
+  handleAddClicked() {
+    this.setState({showListEditor: true});
+  }
+
+  async handleListEditConfirmed(name) {
+    this.setState({showListEditor: false});
+    if (!name)
+      return Promise.resolve();
+
+  	const tasks = await this.taskSvc.post({name, complete: false});
+	this.setState({tasks});
   }
 
   render() {
-    const title = this.props.title;
-    const showClear = this.props.showClear;
-    const tasks = this.state.tasks;
-    const items = [];
+    const { title, showClear } = this.props;
+    const { tasks, showListEditor } = this.state;
 
-    for (const k in tasks) {
-      const v = tasks[k];
-      items.push(
-        <CustomListItem key={k} taskId={k} task={v} onClick={this.handleItemClicked} onDeleteClick={this.handleDeleteClicked} />
-      );
-    }
+	const items = this.state.tasks.map(t =>
+		<CustomListItem key={t._id} task={t} onClick={this.handleItemClicked} onDeleteClick={this.handleDeleteClicked} />
+	);
 
     return (
-        <div className="taskList">
+      <div className="taskList">
         {showClear &&
         <Button bsStyle="danger" onClick={this.handleClearAllClicked} className="pull-right">Remove Completed</Button>
         }
         <h3>{title}</h3>
         <ListGroup>
-        {items}
+          {items}
+          <ListItemEditor show={showListEditor} onBlur={this.handleListEditConfirmed} />
         </ListGroup>
-		<ConfirmDeleteAllModal onAnswer={this.handleConfirmed} show={this.state.confirmModalShowing} />
+        <div>
+          <Button bsStyle="primary" onClick={this.handleAddClicked}><Glyphicon glyph="plus" /> Add</Button>
         </div>
-        );
+        <ConfirmDeleteAllModal onAnswer={this.handleDeleteAllConfirmed} show={this.state.confirmModalShowing} />
+      </div>
+    );
   }
 }
