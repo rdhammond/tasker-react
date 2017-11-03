@@ -28,4 +28,9 @@ export default class TaskService {
 		//return axios.del(`${this.baseUrl}/tasks/${id}`);
 		return Promise.resolve();
 	}
+
+	async deleteCompletedTasks(type) {
+		//return axios.del(`${this.baseUrl}/tasks/completed`);
+		return Promise.resolve([]);
+	}
 }

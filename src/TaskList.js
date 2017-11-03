@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Row, Col, Button, ListGroup, ListGroupItem, Glyphicon, ButtonGroup} from 'react-bootstrap';
+import ConfirmDeleteAllModal from './ConfirmDeleteAllModal';
 import TaskService from './TaskService';
 import './TaskList.css';
 
@@ -35,10 +36,14 @@ class CustomListItem extends Component {
 export default class TaskList extends Component {
   constructor(props) {
     super(props);
-    this.state = {tasks: []};
+    this.state = {
+		tasks: [],
+		confirmModalShowing: false
+	};
     this.taskSvc = new TaskService(this.props.baseUrl);
-    this.handleClearAllClick = this.handleClearAllClick.bind(this);
+    this.handleClearAllClicked = this.handleClearAllClicked.bind(this);
     this.handleItemClicked = this.handleItemClicked.bind(this);
+	this.handleConfirmed = this.handleConfirmed.bind(this);
   }
 
   async componentDidMount() {
@@ -46,8 +51,8 @@ export default class TaskList extends Component {
     this.setState({tasks});
   }
 
-  handleClearAllClick() {
-    window.alert('handleClearAllClick()');
+  handleClearAllClicked() {
+  	this.setState({confirmModalShowing: true});
   }
 
   async handleItemClicked(taskId) {
@@ -62,6 +67,15 @@ export default class TaskList extends Component {
 
   handleDeleteClicked(taskId) {
     window.alert('Delete: ' + taskId);
+  }
+
+  async handleConfirmed(ok) {
+	this.setState({confirmModalShowing: false});
+  	if (!ok)
+		return Promise.resolve();
+
+	const tasksAfterDelete = await this.taskSvc.deleteCompletedTasks(this.props.type);
+	this.setState({tasks: tasksAfterDelete});
   }
 
   render() {
@@ -80,12 +94,13 @@ export default class TaskList extends Component {
     return (
         <div className="taskList">
         {showClear &&
-        <Button bsStyle="danger" onClick={this.handleClearAllClick} className="pull-right">Remove Completed</Button>
+        <Button bsStyle="danger" onClick={this.handleClearAllClicked} className="pull-right">Remove Completed</Button>
         }
         <h3>{title}</h3>
         <ListGroup>
         {items}
         </ListGroup>
+		<ConfirmDeleteAllModal onAnswer={this.handleConfirmed} show={this.state.confirmModalShowing} />
         </div>
         );
   }
