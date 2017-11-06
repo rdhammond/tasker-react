@@ -1,0 +1,7 @@
+.editBox {
+	width: 100%;
+}
+	.editBox:focus {
+		outline: none;
+		border: 0;
+	}

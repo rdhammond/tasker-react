@@ -3,6 +3,7 @@ import {Button, ListGroup, Glyphicon} from 'react-bootstrap';
 import CustomListItem from './CustomListItem';
 import ListItemEditor from './ListItemEditor';
 import ConfirmDeleteAllModal from './ConfirmDeleteAllModal';
+import TaskArray from './TaskArray';
 import TaskService from './TaskService';
 import './TaskList.css';
 
@@ -10,7 +11,7 @@ export default class TaskList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      confirmModalShowing: false,
+	  confirmModalShowing: false,
 	  tasks: [],
 	  showListEditor: false
     };
@@ -20,6 +21,7 @@ export default class TaskList extends Component {
     this.handleDeleteAllConfirmed = this.handleDeleteAllConfirmed.bind(this);
 	this.handleListEditConfirmed = this.handleListEditConfirmed.bind(this);
 	this.handleAddClicked = this.handleAddClicked.bind(this);
+	this.handleDeleteClicked = this.handleDeleteClicked.bind(this);
   }
 
   async componentDidMount() {
@@ -33,13 +35,17 @@ export default class TaskList extends Component {
 
   async handleItemClicked(task) {
 	task.complete = !task.complete;
-
-  	const tasks = await this.taskSvc.put(task);
+	const tasks = new TaskArray(this.state.tasks)
+		.update(task)
+		.toJsArray();
 	this.setState({tasks});
   }
 
   async handleDeleteClicked(task) {
-	const tasks = await this.taskSvc.del(task);
+	await this.taskSvc.del(task);
+	const tasks = new TaskArray(this.state.tasks)
+		.delById(task._id)
+		.toJsArray();
   	this.setState({tasks});
   }
 
@@ -61,13 +67,17 @@ export default class TaskList extends Component {
     if (!name)
       return Promise.resolve();
 
-  	const tasks = await this.taskSvc.post({name, complete: false});
+	const task = {name, complete: false};
+  	await this.taskSvc.post(task);
+	const tasks = new TaskArray(this.state.tasks)
+		.add(task)
+		.toJsArray();
 	this.setState({tasks});
   }
 
   render() {
     const { title, showClear } = this.props;
-    const { tasks, showListEditor } = this.state;
+    const { showListEditor } = this.state;
 
 	const items = this.state.tasks.map(t =>
 		<CustomListItem key={t._id} task={t} onClick={this.handleItemClicked} onDeleteClick={this.handleDeleteClicked} />

@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import {ListGroupItem} from 'react-bootstrap';
+import './ListItemEditor.css';
 
 const ENTER = 13;
 const ESC = 27;
@@ -10,38 +12,38 @@ export default class ListItemEditor extends Component {
 			value: ''
 		};
 		this.handleBlur = this.handleBlur.bind(this);
-		this.handleChange = this.handleChange.bind(this);
+		this.handleKeyUp = this.handleKeyUp.bind(this);
 	}
 
-	handleBlur() {
-		this.props.onBlur(this.state.value);
-	}
-
-	handleChange(e) {
-		this.setState({value: e.target.value});
+	handleBlur(e) {
+		this.props.onBlur(e.target.value);
 	}
 
 	handleKeyUp(e) {
 		switch (e.keyCode) {
-			case ENTER:
-				break;
 			case ESC:
-				this.setState({value: ''});
+				e.target.value = '';
+				break;
+			case ENTER:
 				break;
 			default:
 				return true;
 		}
 
-		this.listItemEditor.blur();
+		this.refs.editBox.blur();
 		return false;
 	}
 
 	render() {
-		if (!this.props.show)
+		const show = this.props.show;
+
+		if (!show)
 			return null;
 
 		return (
-			<input autofocus type="text" className="invisibox" onBlur={this.handleBlur} onChange={this.handleChange} onKeyUp={this.handleKeyUp} value={this.state.value} />
+			<div className="list-group-item">
+				<input autoFocus ref="editBox" type="text" className="editBox" onBlur={this.handleBlur} onKeyUp={this.handleKeyUp} />
+			</div>
 		);
 	}
 }

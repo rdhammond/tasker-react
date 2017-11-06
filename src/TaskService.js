@@ -18,7 +18,7 @@ export default class TaskService {
 		this.put = this.put.bind(this);
 		this.post = this.post.bind(this);
 		this.del = this.del.bind(this);
-		this.delComplete = this.delComplete.bind(this);
+		this.delCompleted = this.delCompleted.bind(this);
 
 		// ** DEBUG
 		this.dummyData = [
@@ -30,7 +30,7 @@ export default class TaskService {
 
 	async get() {
 		//return axios.get(`${this.baseUrl}/tasks/${type}`);
-		return this.dummyData;
+		return this.dummyData.slice();
 	}
 
 	async put(task) {
@@ -39,26 +39,26 @@ export default class TaskService {
 		if (i >= 0) {
 			this.dummyData[i] = task;
 		}
-		return Promise.resolve(this.dummyData);
+		return Promise.resolve();
 	}
 
 	async post(task) {
 		//return axios.post(`${this.baseUrl}/tasks`, {task});
 		task._id = Math.floor(Math.random() * 1000000);
 		this.dummyData.push(task);
-		return Promise.resolve(this.dummyData);
+		return Promise.resolve(task);
 	}
 
 	async del(task) {
 		//return axios.del(`${this.baseUrl}/tasks/${id}`);
 		const i = getIndex(this.dummyData, task._id);
 		if (i >= 0) {
-			this.dummyData = this.dummyData.splice(i, 1);
+			this.dummyData.splice(i, 1);
 		}
-		return Promise.resolve(this.dummyData);
+		return Promise.resolve();
 	}
 
-	async delComplete() {
+	async delCompleted() {
 		//return axios.del(`${this.baseUrl}/tasks/completed`);
 		let i = 0;
 		while (i < this.dummyData.length) {
@@ -66,7 +66,7 @@ export default class TaskService {
 				i++;
 				continue;
 			}
-			this.dummyData = this.dummyData.splice(i, 1);
+			this.dummyData.splice(i, 1);
 		}
 		return Promise.resolve(this.dummyData);
 	}
