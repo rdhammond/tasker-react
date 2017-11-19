@@ -13,13 +13,13 @@ class App extends Component {
         <div className="container">
           <Row>
             <Col md="4">
-              <TaskList type="daily" baseUrl={baseUrl} />
+              <TaskList resource="daily" baseUrl={baseUrl} title="Daily" />
             </Col>
             <Col md="4">
-              <TaskList type="monthly" baseUrl={baseUrl} />
+              <TaskList resource="monthly" baseUrl={baseUrl} title="Monthly" />
             </Col>
             <Col md="4">
-              <TaskList type="longterm" baseUrl={baseUrl} />
+              <TaskList resource="longterm" baseUrl={baseUrl} title="Long Term" />
             </Col>
           </Row>
         </div>

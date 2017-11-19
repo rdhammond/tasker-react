@@ -4,28 +4,24 @@ export default class TaskService {
 	constructor(baseUrl) {
 		this.baseUrl = baseUrl;
 	}
-
-	async getDailies() {
-		return axios.get(`${this.baseUrl}/tasks/daily`);
+	
+	async getAll(resource) {
+		return axios.get(`${this.baseUrl}/tasks/${resource}`);
 	}
 
-	async getWeeklies() {
-		return axios.get(`${this.baseUrl}/tasks/weekly`);
+	async getById(resource, id) {
+		return axios.get(`${this.baseUrl}/tasks/${resource}/${id}`);
+	}
+	
+	async add(resource, task) {
+		return axios.post(`${this.baseUrl}/tasks/${resource}`, task);
 	}
 
-	async getLongTerm() {
-		return axios.get(`${this.baseUrl}/tasks/longterm`);
+	async update(resource, task) {
+		return axios.put(`${this.baseUrl}/tasks/${resource}/${task._id}`, task);
 	}
 
-	async completeTask(id) {
-		return axios.put(`${this.baseUrl}/tasks/${id}`, {complete: true});
-	}
-
-	async addTask(task) {
-		return axios.post(`${this.baseUrl}/tasks`, {task});
-	}
-
-	async deleteTask(id) {
-		return axios.del(`${this.baseUrl}/tasks/${id}`);
+	async deleteById(resource, id) {
+		return axios.delete(`${this.baseUrl}/tasks/${resource}/${id}`);
 	}
 }
