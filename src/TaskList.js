@@ -35,6 +35,8 @@ export default class TaskList extends Component {
 
   async handleItemClicked(task) {
 	task.complete = !task.complete;
+	await this.taskSvc.put(task);
+
 	const tasks = new TaskArray(this.state.tasks)
 		.update(task)
 		.toJsArray();
@@ -73,11 +75,6 @@ export default class TaskList extends Component {
 		.add(task)
 		.toJsArray();
 	this.setState({tasks});
-  }
-
-  async componentDidMount() {
-    const resource = this.props.resource;
-    await this.taskSvc.getAll(resource);
   }
 
   render() {

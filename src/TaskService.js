@@ -1,14 +1,5 @@
 import axios from 'axios';
 
-// ** DEBUG
-function getIndex(tasks, _id) {
-	for (let i = 0; i < tasks.length; i++) {
-		if (tasks[i]._id === _id)
-			return i;
-	}
-	return null;
-}
-
 export default class TaskService {
 	constructor(baseUrl, type) {
 		this.baseUrl = baseUrl;
@@ -19,55 +10,25 @@ export default class TaskService {
 		this.post = this.post.bind(this);
 		this.del = this.del.bind(this);
 		this.delCompleted = this.delCompleted.bind(this);
-
-		// ** DEBUG
-		this.dummyData = [
-			{_id: 1, name: 'Task 1', complete: false},
-			{_id: 2, name: 'Task 2', complete: false},
-			{_id: 3, name: 'Task 3', complete: false},
-		];
 	}
 
-	async get() {
-		//return axios.get(`${this.baseUrl}/tasks/${type}`);
-		return this.dummyData.slice();
+	get() {
+		return axios.get(`${this.baseUrl}/${this.type}`);
 	}
 
-	async put(task) {
-		//return axios.put(`${this.baseUrl}/tasks/${id}`, {complete});
-		const i = getIndex(this.dummyData, task._id);
-		if (i >= 0) {
-			this.dummyData[i] = task;
-		}
-		return Promise.resolve();
+	put(task) {
+		return axios.put(`${this.baseUrl}/${this.type}/${task.id}`, {task});
 	}
 
-	async post(task) {
-		//return axios.post(`${this.baseUrl}/tasks`, {task});
-		task._id = Math.floor(Math.random() * 1000000);
-		this.dummyData.push(task);
-		return Promise.resolve(task);
+	post(task) {
+		return axios.post(`${this.baseUrl}/${this.type}`, {task});
 	}
 
-	async del(task) {
-		//return axios.del(`${this.baseUrl}/tasks/${id}`);
-		const i = getIndex(this.dummyData, task._id);
-		if (i >= 0) {
-			this.dummyData.splice(i, 1);
-		}
-		return Promise.resolve();
+	del(task) {
+		return axios.del(`${this.baseUrl}/${this.type}/${task.id}`);
 	}
 
-	async delCompleted() {
-		//return axios.del(`${this.baseUrl}/tasks/completed`);
-		let i = 0;
-		while (i < this.dummyData.length) {
-			if (!this.dummyData[i].complete) {
-				i++;
-				continue;
-			}
-			this.dummyData.splice(i, 1);
-		}
-		return Promise.resolve(this.dummyData);
+	delCompleted() {
+		return axios.del(`${this.baseUrl}/${this.type}/completed`);
 	}
 }
